@@ -1,5 +1,0 @@
-package edu.drexel.GOP;
-
-public interface PacketAcceptor {
-	public void accept(char data);
-}
