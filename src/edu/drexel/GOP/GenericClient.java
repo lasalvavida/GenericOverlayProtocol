@@ -2,20 +2,19 @@ package edu.drexel.GOP;
 
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.io.PrintWriter;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.DataOutputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.HashSet;
 
 public class GenericClient extends Thread implements PacketAcceptor{
 	private Socket socket;
-	private PrintWriter writer;
-	private BufferedReader reader;
+	private DataOutputStream writer;
+	private DataInputStream reader;
 	private AtomicBoolean sentinel;
 	private HashSet<PacketAcceptor> connections;
-	private PacketBuffer buffer;
+	private static int BUFFER_SIZE = 1000;
 	
 	public GenericClient(String hostName, int port) {
 		sentinel = new AtomicBoolean(true);
@@ -25,10 +24,9 @@ public class GenericClient extends Thread implements PacketAcceptor{
 			
 			System.out.println("Successfully connected to "+hostName+":"+port);
 			
-			writer = new PrintWriter(socket.getOutputStream(), true);
-			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			writer = new DataOutputStream(socket.getOutputStream());
+			reader = new DataInputStream(socket.getInputStream());
 			
-			buffer = new PacketBuffer("Client",writer);
 		}
 		catch (UnknownHostException e) {
 			System.err.println(e.getMessage());
@@ -41,10 +39,11 @@ public class GenericClient extends Thread implements PacketAcceptor{
 		this("localhost", port);
 	}
 	public void run() {
+		byte[] buffer = new byte[BUFFER_SIZE];
 		while(sentinel.get()) {
-			int input;
+			byte input;
 			try {
-				while ((input = reader.read()) >= 0) {
+				while ((input = reader.readUnsignedByte()) >= 0) {
 					for (PacketAcceptor connection : connections) {
 						connection.accept(input);
 					}
@@ -55,8 +54,14 @@ public class GenericClient extends Thread implements PacketAcceptor{
 			}
 		}
 	}
-	public void accept(int packet) {
-		buffer.accept(packet);
+	public void accept(byte packet) {
+		System.out.print((char)packet);
+		try {
+			writer.write(packet);
+		}
+		catch (IOException e) {
+			System.err.println(e.getMessage());
+		}		
 	}
 	public void addPacketAcceptor(PacketAcceptor connection) {
 		connections.add(connection);
