@@ -17,7 +17,7 @@ public final class GOPUtilities {
 	 ** Converts a byte array into an integer.
 	 ** Credit: http://stackoverflow.com/questions/5399798/byte-array-and-int-conversion-in-java
 	 **/
-	public static final int byteArrayToInt(byte[] b) {
+	public static final int byteArrayToInt(byte[] b, int offset) {
 		int value = 0;
 		for (int i = 0; i < 4; i++) {
 			int shift = (4 - 1 - i) * 8;
@@ -34,5 +34,8 @@ public final class GOPUtilities {
 			ret[first.length+i] = second[i];
 		}
 		return ret;
+	}
+	public static int getIntAtPosition(byte[] b, int pos) {
+		return byteArrayToInt(b, pos*4);
 	}
 }
