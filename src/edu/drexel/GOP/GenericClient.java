@@ -25,7 +25,6 @@ public class GenericClient extends Thread implements PacketAcceptor {
 			
 			writer = new DataOutputStream(socket.getOutputStream());
 			reader = new DataInputStream(socket.getInputStream());
-			
 		}
 		catch (UnknownHostException e) {
 			System.err.println(e.getMessage());
@@ -48,7 +47,7 @@ public class GenericClient extends Thread implements PacketAcceptor {
 				}
 			}
 			catch (IOException e) {
-				System.err.println("Error while client readinf rom socket: "+e.getMessage());
+				System.err.println("Error while client reading from socket: "+e.getMessage());
 			}
 		}
 	}

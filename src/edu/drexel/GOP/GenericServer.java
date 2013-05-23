@@ -2,26 +2,23 @@ package edu.drexel.GOP;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.io.DataOutputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.HashSet;
 
-public class GenericServer extends Thread implements PacketAcceptor {
-	private ServerSocket server;
-	private Socket client;
-	private DataOutputStream writer;
-	private DataInputStream reader;
-	private AtomicBoolean sentinel;
+public class GenericServer extends Thread implements PacketAcceptor{
+	private HashSet<ClientListener> servers;
+	private ServerSocket socket;
 	private HashSet<PacketAcceptor> connections;
+	private AtomicBoolean sentinel;
 	
 	public GenericServer(int port) {
 		super();
-		sentinel = new AtomicBoolean(true);
 		connections = new HashSet<PacketAcceptor>();
+		servers = new HashSet<ClientListener>();
+		sentinel = new AtomicBoolean(true);
 		try {
-			server = new ServerSocket(port);
+			socket = new ServerSocket(port);
 		}
 		catch (IOException e) {
 			System.err.println(e.getMessage());
@@ -29,28 +26,22 @@ public class GenericServer extends Thread implements PacketAcceptor {
 		}
 	}
 	public void run() {
-		while (sentinel.get()) {
-			int input;
+		while(sentinel.get()) {
+			Socket client = null;
 			try {
-				client = server.accept();
-				
-				System.out.println("Accepted connection from "+client.getLocalAddress()+":"+client.getLocalPort());
-				
-				writer = new DataOutputStream(client.getOutputStream());
-				reader = new DataInputStream(client.getInputStream());
-				
-				while ((input = reader.read()) >= 0) {
-					for (PacketAcceptor connection : connections) {
-						connection.accept(input);
-					}
-				}
-				
-				writer.close();
-				reader.close();
-				client.close();
+				client = socket.accept();
 			}
 			catch (IOException e) {
-				System.err.println("Error while server reading from socket: "+e.getMessage());
+				System.err.println("Error while accepting client connection: "+e.getMessage());
+			}
+			if(client != null) {
+				ClientListener spawn = new ClientListener(this, client);
+				servers.add(spawn);
+				System.out.println("Accepted connection from "+client.getLocalAddress()+":"+client.getLocalPort());
+				spawn.start();
+			}
+			else {
+				System.err.println("Accepted connection from null client!");
 			}
 		}
 	}
@@ -58,21 +49,22 @@ public class GenericServer extends Thread implements PacketAcceptor {
 		connections.add(connection);
 	}
 	public void accept(int packet) {
-		System.out.print((char)packet);
-		try {
-			writer.write(packet);
-		}
-		catch (IOException e) {
-			System.err.println("Error while server accepting packet: "+e.getMessage());
+		for(ClientListener server : servers) {
+			server.accept(packet);
 		}
 	}
 	public void close() {
-		sentinel.set(false);
-		try {
+		for(ClientListener server : servers) {
 			server.close();
 		}
-		catch (IOException e) {
-			System.err.println(e.getMessage());
+		try {
+			socket.close();
 		}
+		catch (IOException e) {
+			System.err.println("Error while trying to close server socket: "+e.getMessage());
+		}
+	}
+	public HashSet<PacketAcceptor> getPacketAcceptors() {
+		return connections;
 	}
 }
