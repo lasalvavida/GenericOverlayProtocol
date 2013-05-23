@@ -8,13 +8,12 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.HashSet;
 
-public class GenericClient extends Thread implements PacketAcceptor{
+public class GenericClient extends Thread implements PacketAcceptor {
 	private Socket socket;
 	private DataOutputStream writer;
 	private DataInputStream reader;
 	private AtomicBoolean sentinel;
 	private HashSet<PacketAcceptor> connections;
-	private static int BUFFER_SIZE = 1000;
 	
 	public GenericClient(String hostName, int port) {
 		sentinel = new AtomicBoolean(true);
@@ -39,7 +38,6 @@ public class GenericClient extends Thread implements PacketAcceptor{
 		this("localhost", port);
 	}
 	public void run() {
-		byte[] buffer = new byte[BUFFER_SIZE];
 		while(sentinel.get()) {
 			int input;
 			try {

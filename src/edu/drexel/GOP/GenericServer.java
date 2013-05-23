@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.HashSet;
 
-public class GenericServer extends Thread implements PacketAcceptor{
+public class GenericServer extends Thread implements PacketAcceptor {
 	private ServerSocket server;
 	private Socket client;
 	private DataOutputStream writer;

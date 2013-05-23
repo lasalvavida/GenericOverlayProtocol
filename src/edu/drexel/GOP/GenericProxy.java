@@ -13,7 +13,7 @@ public class GenericProxy {
 		server.start();
 		client.start();
 	}
-	public void clsoe() {
+	public void close() {
 		server.close();
 		client.close();
 	}
