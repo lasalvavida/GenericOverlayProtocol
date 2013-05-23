@@ -1,5 +1,7 @@
 package edu.drexel.GOP;
 
+import java.net.DatagramPacket;
+
 public final class GOPUtilities {
 	/**
 	 ** Converts an integer into an array of 4 bytes.
@@ -37,5 +39,11 @@ public final class GOPUtilities {
 	}
 	public static int getIntAtPosition(byte[] b, int pos) {
 		return byteArrayToInt(b, pos*4);
+	}
+	public static int getData(DatagramPacket packet) {
+		return getIntAtPosition(packet.getData(), 0);
+	}
+	public static int getOrder(DatagramPacket packet) {
+		return getIntAtPosition(packet.getData(), 1);
 	}
 }
