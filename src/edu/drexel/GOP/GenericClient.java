@@ -48,7 +48,7 @@ public class GenericClient extends Thread implements PacketAcceptor {
 				}
 			}
 			catch (IOException e) {
-				System.err.println(e.getMessage());
+				System.err.println("Error while client readinf rom socket: "+e.getMessage());
 			}
 		}
 	}
@@ -58,7 +58,7 @@ public class GenericClient extends Thread implements PacketAcceptor {
 			writer.write(packet);
 		}
 		catch (IOException e) {
-			System.err.println(e.getMessage());
+			System.err.println("Error while client accepting packet: "+e.getMessage());
 		}		
 	}
 	public void addPacketAcceptor(PacketAcceptor connection) {

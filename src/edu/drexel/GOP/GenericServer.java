@@ -50,7 +50,7 @@ public class GenericServer extends Thread implements PacketAcceptor {
 				client.close();
 			}
 			catch (IOException e) {
-				System.err.println(e.getMessage());
+				System.err.println("Error while server reading from socket: "+e.getMessage());
 			}
 		}
 	}
@@ -63,7 +63,7 @@ public class GenericServer extends Thread implements PacketAcceptor {
 			writer.write(packet);
 		}
 		catch (IOException e) {
-			System.err.println(e.getMessage());
+			System.err.println("Error while server accepting packet: "+e.getMessage());
 		}
 	}
 	public void close() {
