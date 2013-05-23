@@ -21,8 +21,18 @@ public final class GOPUtilities {
 		int value = 0;
 		for (int i = 0; i < 4; i++) {
 			int shift = (4 - 1 - i) * 8;
-			value += (b[i] & 0x000000FF) << shift;
+			value += (b[i+offset] & 0x000000FF) << shift;
 		}
 		return value;
+	}
+	public static byte[] combine(byte[] first, byte[] second) {
+    		byte[] ret = new byte[first.length + second.length];
+    		for(int i=0; i<first.length; i++) {
+    			ret[i] = first[i];
+		}
+		for(int i=0; i<second.length; i++) {
+			ret[first.length+i] = second[i];
+		}
+		return ret;
 	}
 }
