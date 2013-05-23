@@ -30,7 +30,7 @@ public class GenericServer extends Thread implements PacketAcceptor{
 	}
 	public void run() {
 		while (sentinel.get()) {
-			byte input;
+			int input;
 			try {
 				client = server.accept();
 				
@@ -39,7 +39,7 @@ public class GenericServer extends Thread implements PacketAcceptor{
 				writer = new DataOutputStream(client.getOutputStream());
 				reader = new DataInputStream(client.getInputStream());
 				
-				while ((input = reader.readUnsignedByte()) >= 0) {
+				while ((input = reader.read()) >= 0) {
 					for (PacketAcceptor connection : connections) {
 						connection.accept(input);
 					}
@@ -57,7 +57,7 @@ public class GenericServer extends Thread implements PacketAcceptor{
 	public void addPacketAcceptor(PacketAcceptor connection) {
 		connections.add(connection);
 	}
-	public void accept(byte packet) {
+	public void accept(int packet) {
 		System.out.print((char)packet);
 		try {
 			writer.write(packet);

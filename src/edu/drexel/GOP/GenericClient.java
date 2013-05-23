@@ -41,9 +41,9 @@ public class GenericClient extends Thread implements PacketAcceptor{
 	public void run() {
 		byte[] buffer = new byte[BUFFER_SIZE];
 		while(sentinel.get()) {
-			byte input;
+			int input;
 			try {
-				while ((input = reader.readUnsignedByte()) >= 0) {
+				while ((input = reader.read()) >= 0) {
 					for (PacketAcceptor connection : connections) {
 						connection.accept(input);
 					}
@@ -54,7 +54,7 @@ public class GenericClient extends Thread implements PacketAcceptor{
 			}
 		}
 	}
-	public void accept(byte packet) {
+	public void accept(int packet) {
 		System.out.print((char)packet);
 		try {
 			writer.write(packet);
